@@ -59,13 +59,6 @@ describe('HomePage', () => {
     expect(screen.getByText(/no dailies/i)).toBeInTheDocument();
   });
 
-  it('shows Add Daily button in empty state', () => {
-    const onAdd = vi.fn();
-    render(<HomePage onAddDaily={onAdd} onEditDaily={noop} onDuplicateDaily={noop} onDeleteDaily={noop} />);
-    fireEvent.click(screen.getByRole('button', { name: /add.*daily/i }));
-    expect(onAdd).toHaveBeenCalled();
-  });
-
   it('renders one card per daily', () => {
     mockStore.dailies = [makeDaily('d1', 'Morning', 0), makeDaily('d2', 'Evening', 1)];
     mockStore.schedules = { d1: makeSchedule('d1'), d2: makeSchedule('d2') };
@@ -107,7 +100,7 @@ describe('HomePage', () => {
     expect(onDelete).toHaveBeenCalledWith('d1');
   });
 
-  it('shows Add Daily button when dailies exist', () => {
+  it('shows placeholder add-daily button when dailies exist', () => {
     mockStore.dailies = [makeDaily('d1', 'Test', 0)];
     mockStore.schedules = { d1: makeSchedule('d1') };
     const onAdd = vi.fn();

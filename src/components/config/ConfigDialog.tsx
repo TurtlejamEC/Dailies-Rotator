@@ -6,10 +6,11 @@ interface Props {
   open: boolean;
   mode: 'add' | 'edit' | 'duplicate';
   dailyId?: string;
+  insertAtIndex?: number;
   onClose: () => void;
 }
 
-export default function ConfigDialog({ open, mode, dailyId, onClose }: Props) {
+export default function ConfigDialog({ open, mode, dailyId, insertAtIndex, onClose }: Props) {
   const dailies = useAppStore((s) => s.dailies);
   const addDaily = useAppStore((s) => s.addDaily);
   const updateDaily = useAppStore((s) => s.updateDaily);
@@ -52,7 +53,7 @@ export default function ConfigDialog({ open, mode, dailyId, onClose }: Props) {
         tasksPerDay: data.tasksPerDay,
         ordering: data.ordering,
         tasks: data.tasks,
-      });
+      }, ...(insertAtIndex !== undefined ? [insertAtIndex] : []));
     }
     onClose();
   };

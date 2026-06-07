@@ -14,8 +14,8 @@ export interface AppStore {
   dailies: Daily[];
   schedules: Record<string, DailySchedule>;
 
-  /** id and gridPosition are optional — store generates id if omitted, appends to end if gridPosition omitted */
-  addDaily: (daily: Partial<Pick<Daily, 'id' | 'gridPosition'>> & Omit<Daily, 'id' | 'gridPosition'>) => void;
+  /** id and gridPosition are optional — store generates id if omitted, appends to end if omitted. insertAtIndex overrides gridPosition. */
+  addDaily: (daily: Partial<Pick<Daily, 'id' | 'gridPosition'>> & Omit<Daily, 'id' | 'gridPosition'>, insertAtIndex?: number) => void;
   updateDaily: (id: string, daily: Daily) => void;
   deleteDaily: (id: string) => void;
   reorderDailies: (orderedIds: string[]) => void;
@@ -30,16 +30,20 @@ export const createAppStoreSlice: StateCreator<AppStore> = (set, get) => ({
   dailies: [],
   schedules: {},
 
-  addDaily: (dailyInput) => {
+  addDaily: (dailyInput, insertAtIndex?) => {
     const { dailies } = get();
+    const gridPosition = insertAtIndex !== undefined ? insertAtIndex : dailies.length;
     const daily: Daily = {
       id: generateId(),
-      gridPosition: dailies.length,
       ...dailyInput,
+      gridPosition,
     };
+    const updatedDailies = insertAtIndex !== undefined
+      ? dailies.map((d) => d.gridPosition >= insertAtIndex ? { ...d, gridPosition: d.gridPosition + 1 } : d)
+      : dailies;
     const schedule = computeNewSchedule(daily, null);
     set((s) => ({
-      dailies: [...s.dailies, daily],
+      dailies: [...updatedDailies, daily],
       schedules: { ...s.schedules, [daily.id]: schedule },
     }));
   },

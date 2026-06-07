@@ -51,6 +51,20 @@ describe('addDaily', () => {
     expect(schedule.scheduledTaskIds).toContain('A');
     expect(schedule.scheduledTaskIds).toContain('B');
   });
+
+  it('inserts at insertAtIndex, shifting existing cards with gridPosition >= insertAtIndex', () => {
+    const store = makeStore();
+    store.getState().addDaily(makeDaily({ id: 'd1', name: 'First' }));
+    store.getState().addDaily(makeDaily({ id: 'd2', name: 'Second' }));
+    // insert d3 at visual position 1 — between d1(0) and d2(1)
+    store.getState().addDaily(makeDaily({ id: 'd3', name: 'Third' }), 1);
+
+    const { dailies } = store.getState();
+    const sorted = [...dailies].sort((a, b) => a.gridPosition - b.gridPosition);
+    // d1(0), d3(1), d2(2)
+    expect(sorted.map((d) => d.id)).toEqual(['d1', 'd3', 'd2']);
+    expect(sorted.map((d) => d.gridPosition)).toEqual([0, 1, 2]);
+  });
 });
 
 // ─── deleteDaily ─────────────────────────────────────────────────────────────

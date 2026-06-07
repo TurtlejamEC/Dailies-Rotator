@@ -8,6 +8,7 @@ interface DialogState {
   open: boolean;
   mode: 'add' | 'edit' | 'duplicate';
   dailyId?: string;
+  insertAtIndex?: number;
 }
 
 interface DeleteState {
@@ -40,7 +41,7 @@ export default function App() {
     };
   }
 
-  const openAdd = () => setDialog({ open: true, mode: 'add' });
+  const openAdd = (insertAtIndex?: number) => setDialog({ open: true, mode: 'add', insertAtIndex });
   const openEdit = (id: string) => setDialog({ open: true, mode: 'edit', dailyId: id });
   const openDuplicate = (id: string) => setDialog({ open: true, mode: 'duplicate', dailyId: id });
   const closeDialog = () => setDialog((d) => ({ ...d, open: false }));
@@ -108,10 +109,20 @@ export default function App() {
           onDeleteDaily={openDelete}
         />
       </main>
+      <button
+        onClick={() => openAdd()}
+        aria-label="Add daily"
+        className="fixed bottom-6 right-6 z-30 w-14 h-14 rounded-full bg-violet-500 text-white shadow-lg hover:bg-violet-600 hover:shadow-xl transition-all flex items-center justify-center"
+      >
+        <svg viewBox="0 0 20 20" fill="currentColor" className="w-6 h-6">
+          <path d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"/>
+        </svg>
+      </button>
       <ConfigDialog
         open={dialog.open}
         mode={dialog.mode}
         dailyId={dialog.dailyId}
+        insertAtIndex={dialog.insertAtIndex}
         onClose={closeDialog}
       />
       <ConfirmDeleteDialog

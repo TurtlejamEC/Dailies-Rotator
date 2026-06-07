@@ -22,7 +22,7 @@ import useAppStore from '../../store/useAppStore';
 import DailyCard from './DailyCard';
 
 interface Props {
-  onAddDaily: () => void;
+  onAddDaily: (insertAtIndex?: number) => void;
   onEditDaily: (id: string) => void;
   onDuplicateDaily: (id: string) => void;
   onDeleteDaily: (id: string) => void;
@@ -97,29 +97,13 @@ export default function HomePage({ onAddDaily, onEditDaily, onDuplicateDaily, on
   if (dailies.length === 0) {
     return (
       <div className="flex flex-col items-center gap-4 py-20 text-center">
-        <p className="text-slate-400">No dailies yet. Add one to get started.</p>
-        <button
-          onClick={onAddDaily}
-          aria-label="Add daily"
-          className="px-4 py-2 rounded-lg bg-violet-500 text-white text-sm font-medium hover:bg-violet-600 transition-colors shadow-sm"
-        >
-          Add daily
-        </button>
+        <p className="text-slate-400">No dailies yet. Tap + to add one.</p>
       </div>
     );
   }
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex justify-end">
-        <button
-          onClick={onAddDaily}
-          aria-label="Add daily"
-          className="px-4 py-2 rounded-lg bg-violet-500 text-white text-sm font-medium hover:bg-violet-600 transition-colors shadow-sm"
-        >
-          Add daily
-        </button>
-      </div>
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
@@ -127,7 +111,27 @@ export default function HomePage({ onAddDaily, onEditDaily, onDuplicateDaily, on
         onDragEnd={handleDragEnd}
       >
         <SortableContext items={dailies.map((d) => d.id)} strategy={rectSortingStrategy}>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+            onClick={(e) => {
+              if (e.target !== e.currentTarget) return;
+              const clickX = e.clientX;
+              const clickY = e.clientY;
+              // All children except the last (+ button)
+              const cardEls = Array.from(e.currentTarget.children).slice(0, -1) as HTMLElement[];
+              let insertAtIndex = dailies.length;
+              cardEls.forEach((el, i) => {
+                const rect = el.getBoundingClientRect();
+                if (
+                  rect.bottom < clickY ||
+                  (rect.top <= clickY && clickY <= rect.bottom && rect.left + rect.width / 2 < clickX)
+                ) {
+                  insertAtIndex = i + 1;
+                }
+              });
+              onAddDaily(insertAtIndex < dailies.length ? insertAtIndex : undefined);
+            }}
+          >
             {dailies.map((d) => (
               <SortableCard
                 key={d.id}
@@ -137,6 +141,15 @@ export default function HomePage({ onAddDaily, onEditDaily, onDuplicateDaily, on
                 onDeleteDaily={onDeleteDaily}
               />
             ))}
+            <button
+              onClick={onAddDaily}
+              aria-label="Add daily"
+              className="min-h-32 flex items-center justify-center rounded-xl border-2 border-dashed border-slate-200 text-slate-300 hover:border-violet-300 hover:text-violet-400 transition-colors appearance-none bg-transparent cursor-pointer"
+            >
+              <svg viewBox="0 0 20 20" fill="currentColor" className="w-8 h-8">
+                <path d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"/>
+              </svg>
+            </button>
           </div>
         </SortableContext>
         <DragOverlay>
