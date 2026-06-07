@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { KeyboardEvent, HTMLAttributes } from 'react';
 
 export interface DraftTask {
@@ -28,6 +29,8 @@ export default function TaskRow({
   dragHandleListeners,
   dragHandleAttributes,
 }: Props) {
+  const [priorityStr, setPriorityStr] = useState(String(task.priority));
+
   return (
     <div className="flex items-center gap-2">
       {dragHandleRef && (
@@ -52,29 +55,32 @@ export default function TaskRow({
         ref={inputRef}
         aria-label="Task name"
         placeholder="Task name"
-        className="flex-1 bg-white border border-slate-200 rounded px-2 py-1 text-sm text-slate-800 placeholder-slate-300 focus:outline-none focus:border-amber-400"
+        className="flex-1 bg-white border border-slate-200 rounded px-2 py-1 text-sm text-slate-800 placeholder-slate-300 focus:outline-none focus:border-amber-500"
       />
       <label className="flex items-center gap-1 text-xs text-slate-500 cursor-pointer">
+        Active
         <input
           type="checkbox"
           checked={task.active}
           onChange={(e) => onChange({ ...task, active: e.target.checked })}
           aria-label="Active"
-          className="accent-amber-500"
+          className="accent-amber-600"
         />
-        Active
       </label>
       <label className="flex items-center gap-1 text-xs text-slate-500">
         <span>P</span>
         <input
           type="number"
-          value={task.priority}
+          value={priorityStr}
           min={1}
-          onChange={(e) =>
-            onChange({ ...task, priority: Math.max(1, parseInt(e.target.value) || 1) })
-          }
+          onChange={(e) => setPriorityStr(e.target.value)}
+          onBlur={() => {
+            const val = Math.max(1, parseInt(priorityStr) || 1);
+            onChange({ ...task, priority: val });
+            setPriorityStr(String(val));
+          }}
           aria-label="Priority"
-          className="w-12 bg-white border border-slate-200 rounded px-1 py-1 text-sm text-slate-800 focus:outline-none focus:border-amber-400"
+          className="w-10 bg-white border border-slate-200 rounded px-1 py-1 text-sm text-slate-800 focus:outline-none focus:border-amber-500"
         />
       </label>
       <button

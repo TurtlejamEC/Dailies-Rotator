@@ -10,13 +10,20 @@ import App from '../components/App.tsx';
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..700;1,300..700&display=swap" rel="stylesheet" />
-    <style>
+    <style is:global>
       @import "tailwindcss";
       @theme {
         --font-sans: 'Open Sans', ui-sans-serif, system-ui, sans-serif;
       }
       body {
         font-family: 'Open Sans', ui-sans-serif, system-ui, sans-serif;
+      }
+      input[type=number]::-webkit-inner-spin-button,
+      input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+      }
+      input[type=number] {
+        -moz-appearance: textfield;
       }
     </style>
   </head>

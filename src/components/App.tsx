@@ -89,14 +89,14 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 text-slate-800">
-      <header className="sticky top-0 z-20 bg-amber-500 shadow-md">
+    <div className="min-h-screen bg-gradient-to-br from-stone-50 to-amber-50 text-slate-800">
+      <header className="bg-amber-600 shadow-md">
         <div className="px-6 h-14 flex items-center justify-between">
           <h1 className="text-lg font-bold text-white tracking-tight">Dailies Rotator</h1>
           {import.meta.env.DEV && (
             <button
               onClick={seedDemoData}
-              className="px-3 py-1 text-xs rounded bg-amber-500 text-white/70 hover:text-white border border-amber-400"
+              className="px-3 py-1 text-xs rounded bg-amber-600 text-white/70 hover:text-white border border-amber-500"
             >
               Seed demo data
             </button>
@@ -114,7 +114,7 @@ export default function App() {
       <button
         onClick={() => openAdd()}
         aria-label="Add daily"
-        className="fixed bottom-6 right-6 z-30 w-14 h-14 rounded-full bg-amber-500 text-white shadow-lg hover:bg-amber-600 hover:shadow-xl transition-all flex items-center justify-center"
+        className="fixed bottom-6 right-6 z-30 w-14 h-14 rounded-full border-0 appearance-none bg-amber-600 text-white shadow-lg hover:bg-amber-700 hover:shadow-xl transition-all flex items-center justify-center"
       >
         <svg viewBox="0 0 20 20" fill="currentColor" className="w-6 h-6">
           <path d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"/>

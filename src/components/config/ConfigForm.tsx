@@ -81,6 +81,7 @@ function SortableTaskRow({ task, onChange, onDelete, onKeyDown, inputRef }: Sort
 export default function ConfigForm({ initialData, onSave, onCancel }: Props) {
   const [name, setName] = useState(initialData.name);
   const [tasksPerDay, setTasksPerDay] = useState(initialData.tasksPerDay);
+  const [tasksPerDayStr, setTasksPerDayStr] = useState(String(initialData.tasksPerDay));
   const [ordering, setOrdering] = useState<'sequential' | 'random'>(initialData.ordering);
   const [tasks, setTasks] = useState<DraftTask[]>(initialData.tasks);
 
@@ -147,54 +148,62 @@ export default function ConfigForm({ initialData, onSave, onCancel }: Props) {
           onChange={(e) => setName(e.target.value)}
           aria-label="Daily name"
           placeholder="e.g. Morning Routine"
-          className="bg-white border border-slate-200 rounded px-3 py-2 text-sm text-slate-800 placeholder-slate-300 focus:outline-none focus:border-amber-400"
+          className="bg-white border border-slate-200 rounded px-3 py-2 text-sm text-slate-800 placeholder-slate-300 focus:outline-none focus:border-amber-500"
         />
       </div>
 
       {/* Tasks per day */}
-      <div className="flex flex-col gap-1">
-        <label htmlFor="tasks-per-day" className="text-sm font-medium text-slate-600">
-          Tasks per day
-        </label>
-        <input
-          id="tasks-per-day"
-          type="number"
-          min={1}
-          value={tasksPerDay}
-          onChange={(e) => setTasksPerDay(Math.max(1, parseInt(e.target.value) || 1))}
-          aria-label="Tasks per day"
-          className="w-24 bg-white border border-slate-200 rounded px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-amber-400"
-        />
-      </div>
+      <div className="flex gap-24">
+        {/* Ordering */}
+        <div className="flex flex-col gap-2">
+          <span className="text-sm font-medium text-slate-600">Rotation order</span>
+          <div className="flex gap-4">
+            <label className="flex items-center gap-2 cursor-pointer text-sm text-slate-600">
+              <input
+                type="radio"
+                name="ordering"
+                value="sequential"
+                checked={ordering === 'sequential'}
+                onChange={() => setOrdering('sequential')}
+                aria-label="Sequential"
+                className="accent-amber-600"
+              />
+              Sequential
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer text-sm text-slate-600">
+              <input
+                type="radio"
+                name="ordering"
+                value="random"
+                checked={ordering === 'random'}
+                onChange={() => setOrdering('random')}
+                aria-label="Random"
+                className="accent-amber-600"
+              />
+              Random
+            </label>
+          </div>
+        </div>
 
-      {/* Ordering */}
-      <div className="flex flex-col gap-2">
-        <span className="text-sm font-medium text-slate-600">Rotation order</span>
-        <div className="flex gap-4">
-          <label className="flex items-center gap-2 cursor-pointer text-sm text-slate-600">
-            <input
-              type="radio"
-              name="ordering"
-              value="sequential"
-              checked={ordering === 'sequential'}
-              onChange={() => setOrdering('sequential')}
-              aria-label="Sequential"
-              className="accent-amber-500"
-            />
-            Sequential
+        {/* Tasks per day */}
+        <div className="flex flex-col gap-1">
+          <label htmlFor="tasks-per-day" className="text-sm font-medium text-slate-600">
+            Tasks per day
           </label>
-          <label className="flex items-center gap-2 cursor-pointer text-sm text-slate-600">
-            <input
-              type="radio"
-              name="ordering"
-              value="random"
-              checked={ordering === 'random'}
-              onChange={() => setOrdering('random')}
-              aria-label="Random"
-              className="accent-amber-500"
-            />
-            Random
-          </label>
+          <input
+            id="tasks-per-day"
+            type="number"
+            min={1}
+            value={tasksPerDayStr}
+            onChange={(e) => setTasksPerDayStr(e.target.value)}
+            onBlur={() => {
+              const val = Math.max(1, parseInt(tasksPerDayStr) || 1);
+              setTasksPerDay(val);
+              setTasksPerDayStr(String(val));
+            }}
+            aria-label="Tasks per day"
+            className="w-16 bg-white border border-slate-200 rounded px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-amber-500"
+          />
         </div>
       </div>
 
@@ -229,7 +238,7 @@ export default function ConfigForm({ initialData, onSave, onCancel }: Props) {
           type="button"
           onClick={() => addTask()}
           aria-label="Add task"
-          className="self-start px-3 py-1 text-xs rounded bg-white text-slate-500 hover:text-slate-700 border border-slate-200 hover:border-slate-400 transition-colors"
+          className="self-start px-3 py-1 text-xs rounded appearance-none border-0 bg-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-colors"
         >
           + Add task
         </button>
@@ -241,7 +250,7 @@ export default function ConfigForm({ initialData, onSave, onCancel }: Props) {
           type="button"
           onClick={onCancel}
           aria-label="Cancel"
-          className="px-4 py-2 text-sm rounded text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+          className="px-4 py-2 text-sm rounded border-0 text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-colors"
         >
           Cancel
         </button>
@@ -249,7 +258,7 @@ export default function ConfigForm({ initialData, onSave, onCancel }: Props) {
           type="button"
           onClick={handleSave}
           aria-label="Save"
-          className="px-4 py-2 text-sm rounded bg-amber-500 text-white hover:bg-amber-600 transition-colors"
+          className="px-4 py-2 text-sm rounded border-0 bg-amber-600 text-white hover:bg-amber-700 transition-colors"
         >
           Save
         </button>

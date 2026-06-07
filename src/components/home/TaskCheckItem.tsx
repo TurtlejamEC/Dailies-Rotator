@@ -14,7 +14,7 @@ export default function TaskCheckItem({ task, isCompleted, onToggle }: Props) {
         checked={isCompleted}
         onChange={onToggle}
         aria-label={task.name}
-        className="h-4 w-4 shrink-0 rounded accent-amber-500 cursor-pointer"
+        className="h-4 w-4 shrink-0 rounded accent-amber-600 cursor-pointer"
       />
       <span
         className={`text-sm transition-colors ${
