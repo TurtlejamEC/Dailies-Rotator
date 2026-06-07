@@ -1,9 +1,17 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import useAppStore from '../store/useAppStore';
 import HomePage from './home/HomePage';
+import ConfigDialog from './config/ConfigDialog';
+
+interface DialogState {
+  open: boolean;
+  mode: 'add' | 'edit' | 'duplicate';
+  dailyId?: string;
+}
 
 export default function App() {
   const tickAllDailies = useAppStore((s) => s.tickAllDailies);
+  const [dialog, setDialog] = useState<DialogState>({ open: false, mode: 'add' });
 
   useEffect(() => {
     tickAllDailies();
@@ -24,10 +32,10 @@ export default function App() {
     };
   }
 
-  const handleAddDaily = () => {
-    // placeholder — Config dialog wired in Phase 4
-    alert('Config dialog coming in Phase 4');
-  };
+  const openAdd = () => setDialog({ open: true, mode: 'add' });
+  const openEdit = (id: string) => setDialog({ open: true, mode: 'edit', dailyId: id });
+  const openDuplicate = (id: string) => setDialog({ open: true, mode: 'duplicate', dailyId: id });
+  const closeDialog = () => setDialog((d) => ({ ...d, open: false }));
 
   const seedDemoData = () => {
     const store = useAppStore.getState();
@@ -79,12 +87,18 @@ export default function App() {
       </header>
       <main>
         <HomePage
-          onAddDaily={handleAddDaily}
-          onEditDaily={() => alert('Config dialog coming in Phase 4')}
-          onDuplicateDaily={() => alert('Config dialog coming in Phase 4')}
+          onAddDaily={openAdd}
+          onEditDaily={openEdit}
+          onDuplicateDaily={openDuplicate}
           onDeleteDaily={(id) => useAppStore.getState().deleteDaily(id)}
         />
       </main>
+      <ConfigDialog
+        open={dialog.open}
+        mode={dialog.mode}
+        dailyId={dialog.dailyId}
+        onClose={closeDialog}
+      />
     </div>
   );
 }
