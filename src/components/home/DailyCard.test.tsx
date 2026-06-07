@@ -8,6 +8,7 @@ const mockStore = vi.hoisted(() => ({
   schedules: {} as Record<string, DailySchedule>,
   toggleTask: vi.fn(),
   markAllDone: vi.fn(),
+  unmarkBatchDone: vi.fn(),
 }));
 
 vi.mock('../../store/useAppStore', () => ({
@@ -53,6 +54,7 @@ beforeEach(() => {
   mockStore.schedules = {};
   mockStore.toggleTask.mockClear();
   mockStore.markAllDone.mockClear();
+  mockStore.unmarkBatchDone.mockClear();
 });
 
 // ─── tests ───────────────────────────────────────────────────────────────────
@@ -93,14 +95,45 @@ describe('DailyCard', () => {
     expect(screen.getByRole('checkbox', { name: 'Meditate' })).not.toBeChecked();
   });
 
-  it('calls markAllDone with dailyId when "Mark all done" clicked', () => {
+  it('calls markAllDone when card body clicked', () => {
     mockStore.dailies = [makeDaily('d1')];
     mockStore.schedules = { d1: makeSchedule('d1') };
     render(<DailyCard dailyId="d1" onEdit={noop} onDuplicate={noop} onDelete={noop} />);
 
-    fireEvent.click(screen.getByRole('button', { name: /mark all done/i }));
+    fireEvent.click(screen.getByRole('article'));
 
     expect(mockStore.markAllDone).toHaveBeenCalledWith('d1');
+  });
+
+  it('does not call markAllDone when a button is clicked', () => {
+    mockStore.dailies = [makeDaily('d1')];
+    mockStore.schedules = { d1: makeSchedule('d1') };
+    render(<DailyCard dailyId="d1" onEdit={noop} onDuplicate={noop} onDelete={noop} />);
+
+    fireEvent.click(screen.getByRole('button', { name: /edit/i }));
+
+    expect(mockStore.markAllDone).not.toHaveBeenCalled();
+  });
+
+  it('does not call markAllDone when a checkbox is clicked', () => {
+    mockStore.dailies = [makeDaily('d1')];
+    mockStore.schedules = { d1: makeSchedule('d1') };
+    render(<DailyCard dailyId="d1" onEdit={noop} onDuplicate={noop} onDelete={noop} />);
+
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Exercise' }));
+
+    expect(mockStore.markAllDone).not.toHaveBeenCalled();
+  });
+
+  it('calls unmarkBatchDone when card clicked and all tasks already done', () => {
+    mockStore.dailies = [makeDaily('d1')];
+    mockStore.schedules = { d1: makeSchedule('d1', { completedTaskIds: ['T1', 'T2'] }) };
+    render(<DailyCard dailyId="d1" onEdit={noop} onDuplicate={noop} onDelete={noop} />);
+
+    fireEvent.click(screen.getByRole('article'));
+
+    expect(mockStore.unmarkBatchDone).toHaveBeenCalledWith('d1');
+    expect(mockStore.markAllDone).not.toHaveBeenCalled();
   });
 
   it('shows "all done" banner when all tasks completed', () => {
@@ -150,5 +183,21 @@ describe('DailyCard', () => {
     fireEvent.click(screen.getByRole('button', { name: /duplicate/i }));
 
     expect(onDuplicate).toHaveBeenCalledWith('d1');
+  });
+
+  it('article has data-done="true" when all tasks completed', () => {
+    mockStore.dailies = [makeDaily('d1')];
+    mockStore.schedules = { d1: makeSchedule('d1', { completedTaskIds: ['T1', 'T2'] }) };
+    render(<DailyCard dailyId="d1" onEdit={noop} onDuplicate={noop} onDelete={noop} />);
+
+    expect(screen.getByRole('article')).toHaveAttribute('data-done', 'true');
+  });
+
+  it('article does not have data-done when tasks not all completed', () => {
+    mockStore.dailies = [makeDaily('d1')];
+    mockStore.schedules = { d1: makeSchedule('d1', { completedTaskIds: ['T1'] }) };
+    render(<DailyCard dailyId="d1" onEdit={noop} onDuplicate={noop} onDelete={noop} />);
+
+    expect(screen.getByRole('article')).not.toHaveAttribute('data-done', 'true');
   });
 });

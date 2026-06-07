@@ -137,7 +137,7 @@ export default function ConfigForm({ initialData, onSave, onCancel }: Props) {
     <div className="flex flex-col gap-5">
       {/* Name */}
       <div className="flex flex-col gap-1">
-        <label htmlFor="daily-name" className="text-sm font-medium text-gray-300">
+        <label htmlFor="daily-name" className="text-sm font-medium text-slate-600">
           Daily name
         </label>
         <input
@@ -147,13 +147,13 @@ export default function ConfigForm({ initialData, onSave, onCancel }: Props) {
           onChange={(e) => setName(e.target.value)}
           aria-label="Daily name"
           placeholder="e.g. Morning Routine"
-          className="bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:border-blue-500"
+          className="bg-white border border-slate-200 rounded px-3 py-2 text-sm text-slate-800 placeholder-slate-300 focus:outline-none focus:border-violet-400"
         />
       </div>
 
       {/* Tasks per day */}
       <div className="flex flex-col gap-1">
-        <label htmlFor="tasks-per-day" className="text-sm font-medium text-gray-300">
+        <label htmlFor="tasks-per-day" className="text-sm font-medium text-slate-600">
           Tasks per day
         </label>
         <input
@@ -163,15 +163,15 @@ export default function ConfigForm({ initialData, onSave, onCancel }: Props) {
           value={tasksPerDay}
           onChange={(e) => setTasksPerDay(Math.max(1, parseInt(e.target.value) || 1))}
           aria-label="Tasks per day"
-          className="w-24 bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm text-gray-100 focus:outline-none focus:border-blue-500"
+          className="w-24 bg-white border border-slate-200 rounded px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-violet-400"
         />
       </div>
 
       {/* Ordering */}
       <div className="flex flex-col gap-2">
-        <span className="text-sm font-medium text-gray-300">Rotation order</span>
+        <span className="text-sm font-medium text-slate-600">Rotation order</span>
         <div className="flex gap-4">
-          <label className="flex items-center gap-2 cursor-pointer text-sm text-gray-300">
+          <label className="flex items-center gap-2 cursor-pointer text-sm text-slate-600">
             <input
               type="radio"
               name="ordering"
@@ -179,11 +179,11 @@ export default function ConfigForm({ initialData, onSave, onCancel }: Props) {
               checked={ordering === 'sequential'}
               onChange={() => setOrdering('sequential')}
               aria-label="Sequential"
-              className="accent-blue-500"
+              className="accent-violet-500"
             />
             Sequential
           </label>
-          <label className="flex items-center gap-2 cursor-pointer text-sm text-gray-300">
+          <label className="flex items-center gap-2 cursor-pointer text-sm text-slate-600">
             <input
               type="radio"
               name="ordering"
@@ -191,7 +191,7 @@ export default function ConfigForm({ initialData, onSave, onCancel }: Props) {
               checked={ordering === 'random'}
               onChange={() => setOrdering('random')}
               aria-label="Random"
-              className="accent-blue-500"
+              className="accent-violet-500"
             />
             Random
           </label>
@@ -200,7 +200,7 @@ export default function ConfigForm({ initialData, onSave, onCancel }: Props) {
 
       {/* Task list */}
       <div className="flex flex-col gap-2">
-        <span className="text-sm font-medium text-gray-300">Tasks</span>
+        <span className="text-sm font-medium text-slate-600">Tasks</span>
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}
@@ -229,19 +229,19 @@ export default function ConfigForm({ initialData, onSave, onCancel }: Props) {
           type="button"
           onClick={() => addTask()}
           aria-label="Add task"
-          className="self-start px-3 py-1 text-xs rounded bg-gray-800 text-gray-400 hover:text-gray-100 border border-gray-700 hover:border-gray-500 transition-colors"
+          className="self-start px-3 py-1 text-xs rounded bg-white text-slate-500 hover:text-slate-700 border border-slate-200 hover:border-slate-400 transition-colors"
         >
           + Add task
         </button>
       </div>
 
       {/* Actions */}
-      <div className="flex justify-end gap-2 pt-2 border-t border-gray-800">
+      <div className="flex justify-end gap-2 pt-2 border-t border-slate-200">
         <button
           type="button"
           onClick={onCancel}
           aria-label="Cancel"
-          className="px-4 py-2 text-sm rounded text-gray-400 hover:text-gray-100 hover:bg-gray-800 transition-colors"
+          className="px-4 py-2 text-sm rounded text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-colors"
         >
           Cancel
         </button>
@@ -249,7 +249,7 @@ export default function ConfigForm({ initialData, onSave, onCancel }: Props) {
           type="button"
           onClick={handleSave}
           aria-label="Save"
-          className="px-4 py-2 text-sm rounded bg-blue-600 text-white hover:bg-blue-500 transition-colors"
+          className="px-4 py-2 text-sm rounded bg-violet-500 text-white hover:bg-violet-600 transition-colors"
         >
           Save
         </button>

@@ -21,6 +21,7 @@ export interface AppStore {
   reorderDailies: (orderedIds: string[]) => void;
   toggleTask: (dailyId: string, taskId: string) => void;
   markAllDone: (dailyId: string) => void;
+  unmarkBatchDone: (dailyId: string) => void;
   tickNewDay: (dailyId: string) => void;
   tickAllDailies: () => void;
 }
@@ -102,12 +103,36 @@ export const createAppStoreSlice: StateCreator<AppStore> = (set, get) => ({
     const schedule = schedules[dailyId];
     if (!schedule) return;
 
+    const alreadyDone = new Set(schedule.completedTaskIds);
+    const batchCompletedIds = schedule.scheduledTaskIds.filter((id) => !alreadyDone.has(id));
+
     set((s) => ({
       schedules: {
         ...s.schedules,
         [dailyId]: {
           ...s.schedules[dailyId],
           completedTaskIds: [...s.schedules[dailyId].scheduledTaskIds],
+          batchCompletedIds,
+        },
+      },
+    }));
+  },
+
+  unmarkBatchDone: (dailyId) => {
+    const { schedules } = get();
+    const schedule = schedules[dailyId];
+    if (!schedule) return;
+
+    const batch = new Set(schedule.batchCompletedIds ?? []);
+    const completedTaskIds = schedule.completedTaskIds.filter((id) => !batch.has(id));
+
+    set((s) => ({
+      schedules: {
+        ...s.schedules,
+        [dailyId]: {
+          ...s.schedules[dailyId],
+          completedTaskIds,
+          batchCompletedIds: [],
         },
       },
     }));

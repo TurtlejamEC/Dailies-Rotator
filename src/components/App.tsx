@@ -88,13 +88,13 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 text-gray-100 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-sky-50 text-slate-800 p-6">
       <header className="mb-8 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-100">Dailies Rotator</h1>
+        <h1 className="text-2xl font-bold text-violet-600">Dailies Rotator</h1>
         {import.meta.env.DEV && (
           <button
             onClick={seedDemoData}
-            className="px-3 py-1 text-xs rounded bg-gray-800 text-gray-400 hover:text-gray-100 border border-gray-700"
+            className="px-3 py-1 text-xs rounded bg-white text-slate-400 hover:text-slate-600 border border-slate-200 shadow-sm"
           >
             Seed demo data
           </button>

@@ -1,11 +1,13 @@
 import {
   DndContext,
+  DragOverlay,
   closestCenter,
   PointerSensor,
   KeyboardSensor,
   useSensor,
   useSensors,
   type DragEndEvent,
+  type DragStartEvent,
 } from '@dnd-kit/core';
 import {
   SortableContext,
@@ -15,6 +17,7 @@ import {
   arrayMove,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { useState } from 'react';
 import useAppStore from '../../store/useAppStore';
 import DailyCard from './DailyCard';
 
@@ -36,7 +39,6 @@ function SortableCard({ dailyId, onEditDaily, onDuplicateDaily, onDeleteDaily }:
     attributes,
     listeners,
     setNodeRef,
-    setActivatorNodeRef,
     transform,
     transition,
     isDragging,
@@ -45,20 +47,20 @@ function SortableCard({ dailyId, onEditDaily, onDuplicateDaily, onDeleteDaily }:
   return (
     <div
       ref={setNodeRef}
+      {...listeners}
+      {...attributes}
       style={{
         transform: CSS.Transform.toString(transform),
         transition,
         opacity: isDragging ? 0.4 : 1,
       }}
+      className="touch-none flex flex-col"
     >
       <DailyCard
         dailyId={dailyId}
         onEdit={onEditDaily}
         onDuplicate={onDuplicateDaily}
         onDelete={onDeleteDaily}
-        dragHandleRef={setActivatorNodeRef as (el: HTMLButtonElement | null) => void}
-        dragHandleListeners={listeners as any}
-        dragHandleAttributes={attributes as any}
       />
     </div>
   );
@@ -71,12 +73,19 @@ export default function HomePage({ onAddDaily, onEditDaily, onDuplicateDaily, on
   const reorderDailies = useAppStore((s) => s.reorderDailies);
   const dailies = [...rawDailies].sort((a, b) => a.gridPosition - b.gridPosition);
 
+  const [activeId, setActiveId] = useState<string | null>(null);
+
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   );
 
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveId(event.active.id as string);
+  };
+
   const handleDragEnd = (event: DragEndEvent) => {
+    setActiveId(null);
     const { active, over } = event;
     if (!over || active.id === over.id) return;
     const ids = dailies.map((d) => d.id);
@@ -88,11 +97,11 @@ export default function HomePage({ onAddDaily, onEditDaily, onDuplicateDaily, on
   if (dailies.length === 0) {
     return (
       <div className="flex flex-col items-center gap-4 py-20 text-center">
-        <p className="text-gray-400">No dailies yet. Add one to get started.</p>
+        <p className="text-slate-400">No dailies yet. Add one to get started.</p>
         <button
           onClick={onAddDaily}
           aria-label="Add daily"
-          className="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-500 transition-colors"
+          className="px-4 py-2 rounded-lg bg-violet-500 text-white text-sm font-medium hover:bg-violet-600 transition-colors shadow-sm"
         >
           Add daily
         </button>
@@ -106,12 +115,17 @@ export default function HomePage({ onAddDaily, onEditDaily, onDuplicateDaily, on
         <button
           onClick={onAddDaily}
           aria-label="Add daily"
-          className="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-500 transition-colors"
+          className="px-4 py-2 rounded-lg bg-violet-500 text-white text-sm font-medium hover:bg-violet-600 transition-colors shadow-sm"
         >
           Add daily
         </button>
       </div>
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+      >
         <SortableContext items={dailies.map((d) => d.id)} strategy={rectSortingStrategy}>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {dailies.map((d) => (
@@ -125,6 +139,18 @@ export default function HomePage({ onAddDaily, onEditDaily, onDuplicateDaily, on
             ))}
           </div>
         </SortableContext>
+        <DragOverlay>
+          {activeId ? (
+            <div className="opacity-90 rotate-1 shadow-2xl">
+              <DailyCard
+                dailyId={activeId}
+                onEdit={() => {}}
+                onDuplicate={() => {}}
+                onDelete={() => {}}
+              />
+            </div>
+          ) : null}
+        </DragOverlay>
       </DndContext>
     </div>
   );

@@ -33,6 +33,8 @@ export interface DailySchedule {
    * Resets when the cycle pool refreshes. Used to detect "completed carries" that should rejoin the pool.
    */
   cyclePickedIds: string[];
+  /** Task IDs that were completed via the "mark all done" card click (not manually checked). Used to undo the batch. */
+  batchCompletedIds?: string[];
 }
 
 export interface AppState {

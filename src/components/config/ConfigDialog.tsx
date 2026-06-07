@@ -63,12 +63,12 @@ export default function ConfigDialog({ open, mode, dailyId, onClose }: Props) {
   return (
     <Dialog.Root open={open} onOpenChange={(o) => !o && onClose()}>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 bg-black/60 z-40" />
+        <Dialog.Overlay className="fixed inset-0 bg-black/30 z-40 transition-opacity duration-200 data-[state=closed]:opacity-0 data-[state=open]:opacity-100" />
         <Dialog.Content
-          className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-md bg-gray-900 border border-gray-800 rounded-xl p-6 shadow-2xl"
+          className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-md bg-white border border-slate-200 rounded-xl p-6 shadow-xl transition-all duration-200 data-[state=closed]:opacity-0 data-[state=closed]:scale-95 data-[state=open]:opacity-100 data-[state=open]:scale-100"
           aria-describedby={undefined}
         >
-          <Dialog.Title className="text-lg font-semibold text-gray-100 mb-5">
+          <Dialog.Title className="text-lg font-semibold text-slate-800 mb-5">
             {title}
           </Dialog.Title>
           <ConfigForm initialData={initialData} onSave={handleSave} onCancel={onClose} />

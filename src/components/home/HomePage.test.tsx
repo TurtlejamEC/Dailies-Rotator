@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, within } from '@testing-library/react';
 import type { Daily, DailySchedule } from '../../types';
 
 const mockStore = vi.hoisted(() => ({
@@ -91,7 +91,7 @@ describe('HomePage', () => {
     const onEdit = vi.fn();
     render(<HomePage onAddDaily={noop} onEditDaily={onEdit} onDuplicateDaily={noop} onDeleteDaily={noop} />);
 
-    fireEvent.click(screen.getByRole('button', { name: /edit/i }));
+    fireEvent.click(within(screen.getByRole('article')).getByRole('button', { name: /edit/i }));
 
     expect(onEdit).toHaveBeenCalledWith('d1');
   });
@@ -102,7 +102,7 @@ describe('HomePage', () => {
     const onDelete = vi.fn();
     render(<HomePage onAddDaily={noop} onEditDaily={noop} onDuplicateDaily={noop} onDeleteDaily={onDelete} />);
 
-    fireEvent.click(screen.getByRole('button', { name: /delete/i }));
+    fireEvent.click(within(screen.getByRole('article')).getByRole('button', { name: /delete/i }));
 
     expect(onDelete).toHaveBeenCalledWith('d1');
   });
@@ -118,11 +118,11 @@ describe('HomePage', () => {
     expect(onAdd).toHaveBeenCalled();
   });
 
-  it('renders a drag handle on each card', () => {
+  it('does not render a separate drag handle button on cards', () => {
     mockStore.dailies = [makeDaily('d1', 'Morning', 0), makeDaily('d2', 'Evening', 1)];
     mockStore.schedules = { d1: makeSchedule('d1'), d2: makeSchedule('d2') };
     render(<HomePage onAddDaily={noop} onEditDaily={noop} onDuplicateDaily={noop} onDeleteDaily={noop} />);
 
-    expect(screen.getAllByRole('button', { name: /drag/i })).toHaveLength(2);
+    expect(screen.queryAllByRole('button', { name: /drag/i })).toHaveLength(0);
   });
 });

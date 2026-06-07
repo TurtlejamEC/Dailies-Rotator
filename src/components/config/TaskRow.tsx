@@ -37,7 +37,7 @@ export default function TaskRow({
           {...dragHandleListeners}
           {...dragHandleAttributes}
           aria-label="Drag to reorder"
-          className="p-1 text-gray-600 hover:text-gray-400 cursor-grab active:cursor-grabbing touch-none"
+          className="p-1 text-slate-300 hover:text-slate-500 cursor-grab active:cursor-grabbing touch-none"
         >
           ⠿
         </button>
@@ -50,19 +50,19 @@ export default function TaskRow({
         ref={inputRef}
         aria-label="Task name"
         placeholder="Task name"
-        className="flex-1 bg-gray-800 border border-gray-700 rounded px-2 py-1 text-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:border-blue-500"
+        className="flex-1 bg-white border border-slate-200 rounded px-2 py-1 text-sm text-slate-800 placeholder-slate-300 focus:outline-none focus:border-violet-400"
       />
-      <label className="flex items-center gap-1 text-xs text-gray-400 cursor-pointer">
+      <label className="flex items-center gap-1 text-xs text-slate-500 cursor-pointer">
         <input
           type="checkbox"
           checked={task.active}
           onChange={(e) => onChange({ ...task, active: e.target.checked })}
           aria-label="Active"
-          className="accent-blue-500"
+          className="accent-violet-500"
         />
         Active
       </label>
-      <label className="flex items-center gap-1 text-xs text-gray-400">
+      <label className="flex items-center gap-1 text-xs text-slate-500">
         <span>P</span>
         <input
           type="number"
@@ -72,14 +72,14 @@ export default function TaskRow({
             onChange({ ...task, priority: Math.max(1, parseInt(e.target.value) || 1) })
           }
           aria-label="Priority"
-          className="w-12 bg-gray-800 border border-gray-700 rounded px-1 py-1 text-sm text-gray-100 focus:outline-none focus:border-blue-500"
+          className="w-12 bg-white border border-slate-200 rounded px-1 py-1 text-sm text-slate-800 focus:outline-none focus:border-violet-400"
         />
       </label>
       <button
         type="button"
         onClick={onDelete}
         aria-label="Remove task"
-        className="p-1 text-gray-500 hover:text-red-400 transition-colors"
+        className="p-1 text-slate-300 hover:text-rose-500 transition-colors"
       >
         ✕
       </button>

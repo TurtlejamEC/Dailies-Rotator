@@ -143,6 +143,47 @@ describe('markAllDone', () => {
     const { scheduledTaskIds, completedTaskIds } = schedules['d1'];
     expect(completedTaskIds).toEqual(scheduledTaskIds);
   });
+
+  it('records only newly-completed tasks in batchCompletedIds (not already-done ones)', () => {
+    const store = makeStore();
+    store.getState().addDaily(makeDaily({ id: 'd1' }));
+    // manually complete one task first
+    const scheduled = store.getState().schedules['d1'].scheduledTaskIds;
+    store.getState().toggleTask('d1', scheduled[0]);
+    store.getState().markAllDone('d1');
+
+    const { batchCompletedIds } = store.getState().schedules['d1'];
+    expect(batchCompletedIds).toBeDefined();
+    expect(batchCompletedIds).not.toContain(scheduled[0]); // already done — not in batch
+    expect(batchCompletedIds).toContain(scheduled[1]);     // newly done — in batch
+  });
+});
+
+// ─── unmarkBatchDone ─────────────────────────────────────────────────────────
+
+describe('unmarkBatchDone', () => {
+  it('removes only batch-completed tasks, preserves manually-completed ones', () => {
+    const store = makeStore();
+    store.getState().addDaily(makeDaily({ id: 'd1' }));
+    const scheduled = store.getState().schedules['d1'].scheduledTaskIds;
+    store.getState().toggleTask('d1', scheduled[0]); // manually complete first
+    store.getState().markAllDone('d1');               // batch-complete the rest
+    store.getState().unmarkBatchDone('d1');           // undo batch
+
+    const { completedTaskIds } = store.getState().schedules['d1'];
+    expect(completedTaskIds).toContain(scheduled[0]);    // manual stays
+    expect(completedTaskIds).not.toContain(scheduled[1]); // batch removed
+  });
+
+  it('clears batchCompletedIds after unmark', () => {
+    const store = makeStore();
+    store.getState().addDaily(makeDaily({ id: 'd1' }));
+    store.getState().markAllDone('d1');
+    store.getState().unmarkBatchDone('d1');
+
+    const { batchCompletedIds } = store.getState().schedules['d1'];
+    expect(batchCompletedIds ?? []).toHaveLength(0);
+  });
 });
 
 // ─── tickNewDay ──────────────────────────────────────────────────────────────
