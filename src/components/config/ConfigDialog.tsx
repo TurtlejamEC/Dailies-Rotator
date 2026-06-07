@@ -48,12 +48,15 @@ export default function ConfigDialog({ open, mode, dailyId, insertAtIndex, onClo
         tasks: data.tasks,
       });
     } else {
+      const idx = mode === 'duplicate' && existing !== undefined
+        ? existing.gridPosition + 1
+        : insertAtIndex;
       addDaily({
         name: data.name,
         tasksPerDay: data.tasksPerDay,
         ordering: data.ordering,
         tasks: data.tasks,
-      }, ...(insertAtIndex !== undefined ? [insertAtIndex] : []));
+      }, ...(idx !== undefined ? [idx] : []));
     }
     onClose();
   };
