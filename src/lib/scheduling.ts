@@ -175,6 +175,31 @@ export function computeNewSchedule(
   }
 }
 
+function addDaysToDate(dateStr: string, days: number): string {
+  const d = new Date(dateStr + 'T00:00:00');
+  d.setDate(d.getDate() + days);
+  return d.toISOString().slice(0, 10);
+}
+
+export function projectSchedules(
+  daily: Daily,
+  currentSchedule: DailySchedule,
+  days: number,
+): Array<{ date: string; taskIds: string[] }> {
+  const today = getTodayDate();
+  const result: Array<{ date: string; taskIds: string[] }> = [];
+  result.push({ date: today, taskIds: currentSchedule.scheduledTaskIds });
+
+  let prev: DailySchedule = { ...currentSchedule, completedTaskIds: [...currentSchedule.scheduledTaskIds] };
+  for (let i = 1; i < days; i++) {
+    const next = computeNewSchedule(daily, prev);
+    const date = addDaysToDate(today, i);
+    result.push({ date, taskIds: next.scheduledTaskIds });
+    prev = { ...next, scheduledDate: date, completedTaskIds: [...next.scheduledTaskIds] };
+  }
+  return result;
+}
+
 /**
  * Called after editing a daily's config.
  * - Drops tasks no longer eligible; fills vacated slots
