@@ -1,4 +1,4 @@
-import type { KeyboardEvent } from 'react';
+import type { KeyboardEvent, HTMLAttributes } from 'react';
 
 export interface DraftTask {
   id: string;
@@ -13,11 +13,35 @@ interface Props {
   onDelete: () => void;
   onKeyDown: (e: KeyboardEvent<HTMLInputElement>) => void;
   inputRef?: (el: HTMLInputElement | null) => void;
+  dragHandleRef?: (el: HTMLButtonElement | null) => void;
+  dragHandleListeners?: HTMLAttributes<HTMLButtonElement>;
+  dragHandleAttributes?: HTMLAttributes<HTMLButtonElement>;
 }
 
-export default function TaskRow({ task, onChange, onDelete, onKeyDown, inputRef }: Props) {
+export default function TaskRow({
+  task,
+  onChange,
+  onDelete,
+  onKeyDown,
+  inputRef,
+  dragHandleRef,
+  dragHandleListeners,
+  dragHandleAttributes,
+}: Props) {
   return (
     <div className="flex items-center gap-2">
+      {dragHandleRef && (
+        <button
+          type="button"
+          ref={dragHandleRef}
+          {...dragHandleListeners}
+          {...dragHandleAttributes}
+          aria-label="Drag to reorder"
+          className="p-1 text-gray-600 hover:text-gray-400 cursor-grab active:cursor-grabbing touch-none"
+        >
+          ⠿
+        </button>
+      )}
       <input
         type="text"
         value={task.name}
@@ -44,7 +68,9 @@ export default function TaskRow({ task, onChange, onDelete, onKeyDown, inputRef 
           type="number"
           value={task.priority}
           min={1}
-          onChange={(e) => onChange({ ...task, priority: Math.max(1, parseInt(e.target.value) || 1) })}
+          onChange={(e) =>
+            onChange({ ...task, priority: Math.max(1, parseInt(e.target.value) || 1) })
+          }
           aria-label="Priority"
           className="w-12 bg-gray-800 border border-gray-700 rounded px-1 py-1 text-sm text-gray-100 focus:outline-none focus:border-blue-500"
         />

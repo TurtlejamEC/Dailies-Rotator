@@ -1,4 +1,21 @@
 import { useState, useRef, useEffect, type KeyboardEvent } from 'react';
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  KeyboardSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+  arrayMove,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { generateId } from '../../lib/id';
 import TaskRow, { type DraftTask } from './TaskRow';
 
@@ -15,15 +32,65 @@ interface Props {
   onCancel: () => void;
 }
 
+// ─── sortable task row ────────────────────────────────────────────────────────
+
+interface SortableTaskRowProps {
+  task: DraftTask;
+  onChange: (updated: DraftTask) => void;
+  onDelete: () => void;
+  onKeyDown: (e: KeyboardEvent<HTMLInputElement>) => void;
+  inputRef: (el: HTMLInputElement | null) => void;
+}
+
+function SortableTaskRow({ task, onChange, onDelete, onKeyDown, inputRef }: SortableTaskRowProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    setActivatorNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: task.id });
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={{
+        transform: CSS.Transform.toString(transform),
+        transition,
+        opacity: isDragging ? 0.4 : 1,
+      }}
+    >
+      <TaskRow
+        task={task}
+        onChange={onChange}
+        onDelete={onDelete}
+        onKeyDown={onKeyDown}
+        inputRef={inputRef}
+        dragHandleRef={setActivatorNodeRef as (el: HTMLButtonElement | null) => void}
+        dragHandleListeners={listeners as any}
+        dragHandleAttributes={attributes as any}
+      />
+    </div>
+  );
+}
+
+// ─── config form ─────────────────────────────────────────────────────────────
+
 export default function ConfigForm({ initialData, onSave, onCancel }: Props) {
   const [name, setName] = useState(initialData.name);
   const [tasksPerDay, setTasksPerDay] = useState(initialData.tasksPerDay);
   const [ordering, setOrdering] = useState<'sequential' | 'random'>(initialData.ordering);
   const [tasks, setTasks] = useState<DraftTask[]>(initialData.tasks);
 
-  // Index of task input to focus after state update; -1 = no pending focus
   const [focusIndex, setFocusIndex] = useState(-1);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
 
   useEffect(() => {
     if (focusIndex >= 0 && inputRefs.current[focusIndex]) {
@@ -52,6 +119,14 @@ export default function ConfigForm({ initialData, onSave, onCancel }: Props) {
       setTasks((prev) => prev.filter((_, i) => i !== index));
       setFocusIndex(Math.max(0, index - 1));
     }
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const oldIndex = tasks.findIndex((t) => t.id === active.id);
+    const newIndex = tasks.findIndex((t) => t.id === over.id);
+    setTasks((prev) => arrayMove(prev, oldIndex, newIndex));
   };
 
   const handleSave = () => {
@@ -126,22 +201,30 @@ export default function ConfigForm({ initialData, onSave, onCancel }: Props) {
       {/* Task list */}
       <div className="flex flex-col gap-2">
         <span className="text-sm font-medium text-gray-300">Tasks</span>
-        <div className="flex flex-col gap-2">
-          {tasks.map((task, index) => (
-            <TaskRow
-              key={task.id}
-              task={task}
-              onChange={(updated) =>
-                setTasks((prev) => prev.map((t, i) => (i === index ? updated : t)))
-              }
-              onDelete={() => setTasks((prev) => prev.filter((_, i) => i !== index))}
-              onKeyDown={(e) => handleTaskKeyDown(e, index)}
-              inputRef={(el) => {
-                inputRefs.current[index] = el;
-              }}
-            />
-          ))}
-        </div>
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext items={tasks.map((t) => t.id)} strategy={verticalListSortingStrategy}>
+            <div className="flex flex-col gap-2">
+              {tasks.map((task, index) => (
+                <SortableTaskRow
+                  key={task.id}
+                  task={task}
+                  onChange={(updated) =>
+                    setTasks((prev) => prev.map((t, i) => (i === index ? updated : t)))
+                  }
+                  onDelete={() => setTasks((prev) => prev.filter((_, i) => i !== index))}
+                  onKeyDown={(e) => handleTaskKeyDown(e, index)}
+                  inputRef={(el) => {
+                    inputRefs.current[index] = el;
+                  }}
+                />
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
         <button
           type="button"
           onClick={() => addTask()}

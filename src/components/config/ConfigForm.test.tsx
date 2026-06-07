@@ -179,3 +179,12 @@ describe('ConfigForm — save / cancel', () => {
     expect(onSave).not.toHaveBeenCalled();
   });
 });
+
+// ─── drag to reorder ─────────────────────────────────────────────────────────
+
+describe('ConfigForm — drag to reorder tasks', () => {
+  it('renders a drag handle for each task row', () => {
+    render(<ConfigForm initialData={makeData()} onSave={noop} onCancel={noop} />);
+    expect(screen.getAllByRole('button', { name: /drag/i })).toHaveLength(2);
+  });
+});

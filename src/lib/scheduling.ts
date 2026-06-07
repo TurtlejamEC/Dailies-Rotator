@@ -17,6 +17,11 @@ export function getEligibleTasks(daily: Daily): Task[] {
   return active.filter((t) => t.priority === maxPriority);
 }
 
+function sortByTaskOrder(ids: string[], daily: Daily): string[] {
+  const orderMap = new Map(daily.tasks.map((t, i) => [t.id, i]));
+  return [...ids].sort((a, b) => (orderMap.get(a) ?? Infinity) - (orderMap.get(b) ?? Infinity));
+}
+
 function shuffleArray<T>(arr: T[]): T[] {
   const copy = [...arr];
   for (let i = copy.length - 1; i > 0; i--) {
@@ -62,14 +67,19 @@ export function adjustSequentialIndex(
   if (newEligible.length === 0) return 0;
   if (oldEligible.length === 0) return 0;
 
-  const wrappedOld = oldIndex % oldEligible.length;
-  const nextOldTask = oldEligible[wrappedOld];
+  const N = oldEligible.length;
+  // Use the last-picked task (one before the "next" pointer) as the anchor.
+  // Continue from the position immediately after it in the new list.
+  // This preserves rotation progress relative to what was last done, not what was about to be done.
+  const lastPickedIdx = (oldIndex - 1 + N) % N;
+  const lastPickedTask = oldEligible[lastPickedIdx];
 
-  const directMatch = newEligible.findIndex((t) => t.id === nextOldTask.id);
-  if (directMatch !== -1) return directMatch;
+  const foundInNew = newEligible.findIndex((t) => t.id === lastPickedTask.id);
+  if (foundInNew !== -1) return (foundInNew + 1) % newEligible.length;
 
-  // Walk forward in old list to find first surviving task
-  for (let i = wrappedOld + 1; i < oldEligible.length; i++) {
+  // Last-picked task was removed: walk forward in old list to find first surviving task
+  // and use its position in the new list as the next starting point
+  for (let i = lastPickedIdx + 1; i < oldEligible.length; i++) {
     const idx = newEligible.findIndex((t) => t.id === oldEligible[i].id);
     if (idx !== -1) return idx;
   }
@@ -108,7 +118,7 @@ export function computeNewSchedule(
     return {
       dailyId: daily.id,
       scheduledDate: today,
-      scheduledTaskIds: [...carriedIds, ...newIds],
+      scheduledTaskIds: sortByTaskOrder([...carriedIds, ...newIds], daily),
       completedTaskIds: [],
       sequentialIndex: nextIndex,
       randomPool: [],
@@ -156,7 +166,7 @@ export function computeNewSchedule(
     return {
       dailyId: daily.id,
       scheduledDate: today,
-      scheduledTaskIds: [...carriedIds, ...picked],
+      scheduledTaskIds: sortByTaskOrder([...carriedIds, ...picked], daily),
       completedTaskIds: [],
       sequentialIndex: prevSchedule?.sequentialIndex ?? 0,
       randomPool: remaining,
@@ -205,7 +215,7 @@ export function reconcileSchedule(
     );
     return {
       ...currentSchedule,
-      scheduledTaskIds: [...newScheduled, ...newIds],
+      scheduledTaskIds: sortByTaskOrder([...newScheduled, ...newIds], daily),
       completedTaskIds: newCompleted,
       sequentialIndex: nextIndex,
       randomPool: [],
@@ -248,7 +258,7 @@ export function reconcileSchedule(
 
     return {
       ...currentSchedule,
-      scheduledTaskIds: [...newScheduled, ...picked],
+      scheduledTaskIds: sortByTaskOrder([...newScheduled, ...picked], daily),
       completedTaskIds: newCompleted,
       randomPool: remaining,
       cyclePickedIds: newCyclePickedIds,

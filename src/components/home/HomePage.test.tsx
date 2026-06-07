@@ -7,6 +7,7 @@ const mockStore = vi.hoisted(() => ({
   schedules: {} as Record<string, DailySchedule>,
   toggleTask: vi.fn(),
   markAllDone: vi.fn(),
+  reorderDailies: vi.fn(),
 }));
 
 vi.mock('../../store/useAppStore', () => ({
@@ -47,6 +48,7 @@ beforeEach(() => {
   mockStore.schedules = {};
   mockStore.toggleTask.mockClear();
   mockStore.markAllDone.mockClear();
+  mockStore.reorderDailies.mockClear();
 });
 
 // ─── tests ───────────────────────────────────────────────────────────────────
@@ -114,5 +116,13 @@ describe('HomePage', () => {
     fireEvent.click(screen.getByRole('button', { name: /add.*daily/i }));
 
     expect(onAdd).toHaveBeenCalled();
+  });
+
+  it('renders a drag handle on each card', () => {
+    mockStore.dailies = [makeDaily('d1', 'Morning', 0), makeDaily('d2', 'Evening', 1)];
+    mockStore.schedules = { d1: makeSchedule('d1'), d2: makeSchedule('d2') };
+    render(<HomePage onAddDaily={noop} onEditDaily={noop} onDuplicateDaily={noop} onDeleteDaily={noop} />);
+
+    expect(screen.getAllByRole('button', { name: /drag/i })).toHaveLength(2);
   });
 });

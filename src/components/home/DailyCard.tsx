@@ -1,3 +1,4 @@
+import type { HTMLAttributes } from 'react';
 import useAppStore from '../../store/useAppStore';
 import type { Task } from '../../types';
 import TaskCheckItem from './TaskCheckItem';
@@ -7,9 +8,20 @@ interface Props {
   onEdit: (id: string) => void;
   onDuplicate: (id: string) => void;
   onDelete: (id: string) => void;
+  dragHandleRef?: (el: HTMLButtonElement | null) => void;
+  dragHandleListeners?: HTMLAttributes<HTMLButtonElement>;
+  dragHandleAttributes?: HTMLAttributes<HTMLButtonElement>;
 }
 
-export default function DailyCard({ dailyId, onEdit, onDuplicate, onDelete }: Props) {
+export default function DailyCard({
+  dailyId,
+  onEdit,
+  onDuplicate,
+  onDelete,
+  dragHandleRef,
+  dragHandleListeners,
+  dragHandleAttributes,
+}: Props) {
   const daily = useAppStore((s) => s.dailies.find((d) => d.id === dailyId));
   const schedule = useAppStore((s) => s.schedules[dailyId]);
   const toggleTask = useAppStore((s) => s.toggleTask);
@@ -29,7 +41,23 @@ export default function DailyCard({ dailyId, onEdit, onDuplicate, onDelete }: Pr
     <article className="bg-gray-900 rounded-xl p-4 flex flex-col gap-3 border border-gray-800">
       {/* Header */}
       <div className="flex items-start justify-between gap-2">
-        <h2 className="text-base font-semibold text-gray-100 leading-snug">{daily.name}</h2>
+        <div className="flex items-center gap-2 min-w-0">
+          {dragHandleRef && (
+            <button
+              type="button"
+              ref={dragHandleRef}
+              {...dragHandleListeners}
+              {...dragHandleAttributes}
+              aria-label="Drag to reorder"
+              className="text-gray-600 hover:text-gray-400 cursor-grab active:cursor-grabbing touch-none shrink-0"
+            >
+              ⠿
+            </button>
+          )}
+          <h2 className="text-base font-semibold text-gray-100 leading-snug truncate">
+            {daily.name}
+          </h2>
+        </div>
         <div className="flex gap-1 shrink-0">
           <button
             onClick={() => onEdit(dailyId)}

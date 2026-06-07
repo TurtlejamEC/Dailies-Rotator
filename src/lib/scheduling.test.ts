@@ -151,7 +151,7 @@ describe('computeNewSchedule — sequential', () => {
       sequentialIndex: 5,
     });
     const s = computeNewSchedule(daily, prev);
-    expect(s.scheduledTaskIds).toEqual(['D', 'A']);
+    expect(s.scheduledTaskIds).toEqual(['A', 'D']); // sorted by task-list order: A(0) before D(3)
     expect(s.sequentialIndex).toBe(1);
   });
 
@@ -343,7 +343,8 @@ describe('computeNewSchedule — random', () => {
     const s = computeNewSchedule(daily, prev);
     // New cycle: all scheduled tasks are fresh picks (no carries), so cyclePickedIds === scheduledTaskIds
     expect(s.cyclePickedIds).toHaveLength(2);
-    expect(s.cyclePickedIds).toEqual(s.scheduledTaskIds);
+    // cyclePickedIds is raw pick order; scheduledTaskIds is sorted — same elements, different order
+    expect(new Set(s.cyclePickedIds)).toEqual(new Set(s.scheduledTaskIds));
   });
 });
 
