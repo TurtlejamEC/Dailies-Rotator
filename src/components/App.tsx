@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import useAppStore from '../store/useAppStore';
 import HomePage from './home/HomePage';
 import ConfigDialog from './config/ConfigDialog';
+import ConfirmDeleteDialog from './home/ConfirmDeleteDialog';
 
 interface DialogState {
   open: boolean;
@@ -9,9 +10,16 @@ interface DialogState {
   dailyId?: string;
 }
 
+interface DeleteState {
+  open: boolean;
+  dailyId?: string;
+}
+
 export default function App() {
   const tickAllDailies = useAppStore((s) => s.tickAllDailies);
+  const dailies = useAppStore((s) => s.dailies);
   const [dialog, setDialog] = useState<DialogState>({ open: false, mode: 'add' });
+  const [deleteState, setDeleteState] = useState<DeleteState>({ open: false });
 
   useEffect(() => {
     tickAllDailies();
@@ -36,6 +44,13 @@ export default function App() {
   const openEdit = (id: string) => setDialog({ open: true, mode: 'edit', dailyId: id });
   const openDuplicate = (id: string) => setDialog({ open: true, mode: 'duplicate', dailyId: id });
   const closeDialog = () => setDialog((d) => ({ ...d, open: false }));
+
+  const openDelete = (id: string) => setDeleteState({ open: true, dailyId: id });
+  const closeDelete = () => setDeleteState({ open: false });
+  const confirmDelete = () => {
+    if (deleteState.dailyId) useAppStore.getState().deleteDaily(deleteState.dailyId);
+    closeDelete();
+  };
 
   const seedDemoData = () => {
     const store = useAppStore.getState();
@@ -90,7 +105,7 @@ export default function App() {
           onAddDaily={openAdd}
           onEditDaily={openEdit}
           onDuplicateDaily={openDuplicate}
-          onDeleteDaily={(id) => useAppStore.getState().deleteDaily(id)}
+          onDeleteDaily={openDelete}
         />
       </main>
       <ConfigDialog
@@ -98,6 +113,12 @@ export default function App() {
         mode={dialog.mode}
         dailyId={dialog.dailyId}
         onClose={closeDialog}
+      />
+      <ConfirmDeleteDialog
+        open={deleteState.open}
+        dailyName={dailies.find((d) => d.id === deleteState.dailyId)?.name ?? ''}
+        onConfirm={confirmDelete}
+        onCancel={closeDelete}
       />
     </div>
   );
