@@ -89,19 +89,21 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-sky-50 text-slate-800 p-6">
-      <header className="mb-8 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-violet-600">Dailies Rotator</h1>
-        {import.meta.env.DEV && (
-          <button
-            onClick={seedDemoData}
-            className="px-3 py-1 text-xs rounded bg-white text-slate-400 hover:text-slate-600 border border-slate-200 shadow-sm"
-          >
-            Seed demo data
-          </button>
-        )}
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-sky-50 text-slate-800">
+      <header className="sticky top-0 z-20 bg-violet-600 shadow-md">
+        <div className="px-6 h-14 flex items-center justify-between">
+          <h1 className="text-lg font-bold text-white tracking-tight">Dailies Rotator</h1>
+          {import.meta.env.DEV && (
+            <button
+              onClick={seedDemoData}
+              className="px-3 py-1 text-xs rounded bg-violet-500 text-white/70 hover:text-white border border-violet-400"
+            >
+              Seed demo data
+            </button>
+          )}
+        </div>
       </header>
-      <main>
+      <main className="p-6">
         <HomePage
           onAddDaily={openAdd}
           onEditDaily={openEdit}
