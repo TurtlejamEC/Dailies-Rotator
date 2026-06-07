@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { createJSONStorage, persist } from 'zustand/middleware';
 import type { StateCreator } from 'zustand';
 import type { Daily, DailySchedule } from '../types';
 import {
@@ -136,6 +136,10 @@ const useAppStore = create<AppStore>()(
   persist(createAppStoreSlice, {
     name: 'dailies-rotator-state',
     version: 1,
+    // Use window.localStorage explicitly — avoids Node.js 22's broken globalThis.localStorage
+    storage: createJSONStorage(() =>
+      typeof window !== 'undefined' ? window.localStorage : undefined,
+    ),
     migrate: (state) => state as AppStore,
   }),
 );

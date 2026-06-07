@@ -341,10 +341,9 @@ describe('computeNewSchedule — random', () => {
       cyclePickedIds: ['C', 'D', 'E', 'A', 'B'], // full cycle done
     });
     const s = computeNewSchedule(daily, prev);
-    // New cycle: cyclePickedIds should only contain today's fresh picks
+    // New cycle: all scheduled tasks are fresh picks (no carries), so cyclePickedIds === scheduledTaskIds
     expect(s.cyclePickedIds).toHaveLength(2);
-    // Should not carry over the old cycle picks
-    expect(s.cyclePickedIds).not.toContain('C');
+    expect(s.cyclePickedIds).toEqual(s.scheduledTaskIds);
   });
 });
 
