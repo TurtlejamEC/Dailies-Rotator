@@ -22,6 +22,7 @@ export interface AppStore {
   toggleTask: (dailyId: string, taskId: string) => void;
   markAllDone: (dailyId: string) => void;
   unmarkBatchDone: (dailyId: string) => void;
+  resetSchedule: (dailyId: string) => void;
   tickNewDay: (dailyId: string) => void;
   tickAllDailies: () => void;
 }
@@ -140,6 +141,14 @@ export const createAppStoreSlice: StateCreator<AppStore> = (set, get) => ({
         },
       },
     }));
+  },
+
+  resetSchedule: (dailyId) => {
+    const { dailies } = get();
+    const daily = dailies.find((d) => d.id === dailyId);
+    if (!daily) return;
+    const schedule = computeNewSchedule(daily, null);
+    set((s) => ({ schedules: { ...s.schedules, [dailyId]: schedule } }));
   },
 
   tickNewDay: (dailyId) => {

@@ -3,6 +3,7 @@ import useAppStore from '../store/useAppStore';
 import HomePage from './home/HomePage';
 import ConfigDialog from './config/ConfigDialog';
 import ConfirmDeleteDialog from './home/ConfirmDeleteDialog';
+import ConfirmResetDialog from './home/ConfirmResetDialog';
 
 interface DialogState {
   open: boolean;
@@ -21,6 +22,7 @@ export default function App() {
   const dailies = useAppStore((s) => s.dailies);
   const [dialog, setDialog] = useState<DialogState>({ open: false, mode: 'add' });
   const [deleteState, setDeleteState] = useState<DeleteState>({ open: false });
+  const [resetState, setResetState] = useState<{ open: boolean; dailyId?: string }>({ open: false });
 
   useEffect(() => {
     tickAllDailies();
@@ -47,6 +49,13 @@ export default function App() {
   const closeDialog = () => setDialog((d) => ({ ...d, open: false }));
 
   const openDelete = (id: string) => setDeleteState({ open: true, dailyId: id });
+
+  const openReset = () => setResetState({ open: true, dailyId: dialog.dailyId });
+  const closeReset = () => setResetState({ open: false });
+  const confirmReset = () => {
+    if (resetState.dailyId) useAppStore.getState().resetSchedule(resetState.dailyId);
+    closeReset();
+  };
   const closeDelete = () => setDeleteState({ open: false });
   const confirmDelete = () => {
     if (deleteState.dailyId) useAppStore.getState().deleteDaily(deleteState.dailyId);
@@ -126,6 +135,13 @@ export default function App() {
         dailyId={dialog.dailyId}
         insertAtIndex={dialog.insertAtIndex}
         onClose={closeDialog}
+        onReset={openReset}
+      />
+      <ConfirmResetDialog
+        open={resetState.open}
+        dailyName={dailies.find((d) => d.id === resetState.dailyId)?.name ?? ''}
+        onConfirm={confirmReset}
+        onCancel={closeReset}
       />
       <ConfirmDeleteDialog
         open={deleteState.open}
