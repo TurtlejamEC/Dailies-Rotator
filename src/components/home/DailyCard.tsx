@@ -53,7 +53,7 @@ export default function DailyCard({ dailyId, onEdit, onDuplicate, onDelete }: Pr
           <button
             onClick={() => onEdit(dailyId)}
             aria-label="Edit"
-            className="p-1.5 appearance-none bg-transparent border-0 text-slate-400 hover:text-sky-600 transition-colors"
+            className="p-1.5 appearance-none bg-transparent border-0 text-slate-400 hover:text-amber-600 transition-colors"
           >
             <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
               <path d="M13.586 3.586a2 2 0 112.828 2.828l-10 10A2 2 0 015 17H3v-2a2 2 0 01.586-1.414l10-10z"/>

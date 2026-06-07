@@ -144,7 +144,7 @@ export default function HomePage({ onAddDaily, onEditDaily, onDuplicateDaily, on
             <button
               onClick={onAddDaily}
               aria-label="Add daily"
-              className="min-h-32 flex items-center justify-center rounded-xl border-2 border-dashed border-slate-200 text-slate-300 hover:border-violet-300 hover:text-violet-400 transition-colors appearance-none bg-transparent cursor-pointer"
+              className="min-h-32 flex items-center justify-center rounded-xl border-2 border-dashed border-slate-200 text-slate-300 hover:border-amber-300 hover:text-amber-400 transition-colors appearance-none bg-transparent cursor-pointer"
             >
               <svg viewBox="0 0 20 20" fill="currentColor" className="w-8 h-8">
                 <path d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"/>

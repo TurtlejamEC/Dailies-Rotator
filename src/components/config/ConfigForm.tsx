@@ -147,7 +147,7 @@ export default function ConfigForm({ initialData, onSave, onCancel }: Props) {
           onChange={(e) => setName(e.target.value)}
           aria-label="Daily name"
           placeholder="e.g. Morning Routine"
-          className="bg-white border border-slate-200 rounded px-3 py-2 text-sm text-slate-800 placeholder-slate-300 focus:outline-none focus:border-violet-400"
+          className="bg-white border border-slate-200 rounded px-3 py-2 text-sm text-slate-800 placeholder-slate-300 focus:outline-none focus:border-amber-400"
         />
       </div>
 
@@ -163,7 +163,7 @@ export default function ConfigForm({ initialData, onSave, onCancel }: Props) {
           value={tasksPerDay}
           onChange={(e) => setTasksPerDay(Math.max(1, parseInt(e.target.value) || 1))}
           aria-label="Tasks per day"
-          className="w-24 bg-white border border-slate-200 rounded px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-violet-400"
+          className="w-24 bg-white border border-slate-200 rounded px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-amber-400"
         />
       </div>
 
@@ -179,7 +179,7 @@ export default function ConfigForm({ initialData, onSave, onCancel }: Props) {
               checked={ordering === 'sequential'}
               onChange={() => setOrdering('sequential')}
               aria-label="Sequential"
-              className="accent-violet-500"
+              className="accent-amber-500"
             />
             Sequential
           </label>
@@ -191,7 +191,7 @@ export default function ConfigForm({ initialData, onSave, onCancel }: Props) {
               checked={ordering === 'random'}
               onChange={() => setOrdering('random')}
               aria-label="Random"
-              className="accent-violet-500"
+              className="accent-amber-500"
             />
             Random
           </label>
@@ -249,7 +249,7 @@ export default function ConfigForm({ initialData, onSave, onCancel }: Props) {
           type="button"
           onClick={handleSave}
           aria-label="Save"
-          className="px-4 py-2 text-sm rounded bg-violet-500 text-white hover:bg-violet-600 transition-colors"
+          className="px-4 py-2 text-sm rounded bg-amber-500 text-white hover:bg-amber-600 transition-colors"
         >
           Save
         </button>
