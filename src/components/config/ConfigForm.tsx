@@ -30,6 +30,7 @@ interface Props {
   initialData: ConfigFormData;
   onSave: (data: ConfigFormData) => void;
   onCancel: () => void;
+  className?: string;
 }
 
 // ─── sortable task row ────────────────────────────────────────────────────────
@@ -78,7 +79,7 @@ function SortableTaskRow({ task, onChange, onDelete, onKeyDown, inputRef }: Sort
 
 // ─── config form ─────────────────────────────────────────────────────────────
 
-export default function ConfigForm({ initialData, onSave, onCancel }: Props) {
+export default function ConfigForm({ initialData, onSave, onCancel, className }: Props) {
   const [name, setName] = useState(initialData.name);
   const [tasksPerDay, setTasksPerDay] = useState(initialData.tasksPerDay);
   const [tasksPerDayStr, setTasksPerDayStr] = useState(String(initialData.tasksPerDay));
@@ -135,7 +136,7 @@ export default function ConfigForm({ initialData, onSave, onCancel }: Props) {
   };
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className={`flex flex-col gap-5 ${className ?? ''}`}>
       {/* Name */}
       <div className="flex flex-col gap-1">
         <label htmlFor="daily-name" className="text-sm font-medium text-slate-600">
@@ -208,7 +209,7 @@ export default function ConfigForm({ initialData, onSave, onCancel }: Props) {
       </div>
 
       {/* Task list */}
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 min-h-0 overflow-y-auto flex-1">
         <span className="text-sm font-medium text-slate-600">Tasks</span>
         <DndContext
           sensors={sensors}
@@ -245,7 +246,7 @@ export default function ConfigForm({ initialData, onSave, onCancel }: Props) {
       </div>
 
       {/* Actions */}
-      <div className="flex justify-end gap-2 pt-2 border-t border-slate-200">
+      <div className="flex justify-end gap-2 pt-2 border-t border-slate-200 shrink-0">
         <button
           type="button"
           onClick={onCancel}

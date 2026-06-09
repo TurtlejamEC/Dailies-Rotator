@@ -70,7 +70,7 @@ export default function ConfigDialog({ open, mode, dailyId, insertAtIndex, onClo
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 bg-black/30 z-40 transition-opacity duration-200 data-[state=closed]:opacity-0 data-[state=open]:opacity-100" />
         <Dialog.Content
-          className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-md bg-white border border-slate-200 rounded-xl p-6 shadow-xl transition-all duration-200 data-[state=closed]:opacity-0 data-[state=closed]:scale-95 data-[state=open]:opacity-100 data-[state=open]:scale-100"
+          className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-md max-h-[85vh] bg-white border border-slate-200 rounded-xl p-6 shadow-xl transition-all duration-200 data-[state=closed]:opacity-0 data-[state=closed]:scale-95 data-[state=open]:opacity-100 data-[state=open]:scale-100 flex flex-col"
           aria-describedby={undefined}
         >
           <div className="flex items-center justify-between mb-5">
@@ -91,7 +91,7 @@ export default function ConfigDialog({ open, mode, dailyId, insertAtIndex, onClo
               </button>
             )}
           </div>
-          <ConfigForm initialData={initialData} onSave={handleSave} onCancel={onClose} />
+          <ConfigForm initialData={initialData} onSave={handleSave} onCancel={onClose} className="flex-1 min-h-0" />
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>
